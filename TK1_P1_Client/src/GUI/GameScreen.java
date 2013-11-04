@@ -1,6 +1,5 @@
 package GUI;
 
-import impl.Player;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,7 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -25,6 +28,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import main.IGameClientImpl;
+import main.Player;
 
 public class GameScreen {
 private static int LARGE=640;
@@ -39,23 +45,26 @@ private JPanel title;
 private JPanel scores;
 private JLabel user;
 private JLabel titlelbl;
+private JPanel playing;
 private JButton ok;
 private Player clientplayer;
-private List<Player> players;
+private Map<String, Player> players;
+private IGameClientImpl IGame;
 
 private int gamenr;
 
-private boolean[][] example = { {false, false, false, false, false, false, false, false}, {false, false, false, false, false, false, false, false},{false, false, false, false, false, false, false, false},{false, false, false, false, true, false, false, false},{false, false, false, false, false, false, false, false}};
-	
-	public GameScreen(Player client){
+private boolean[][] example; 
+
+	public GameScreen(IGameClientImpl IGame){
+		this.IGame = IGame;
+		clientplayer = IGame.getPlayer();
+		players = new HashMap<String, Player>(IGame.getPlayers());
+		example = IGame.getBoard();
 		
-		prepareexample();
-		this.clientplayer = client;
-		players.add(clientplayer);
 		gamenr = 0;
 		frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle(client.getName() + " hunt the fly!");
+        frame.setTitle(clientplayer.getName() + " hunt the fly!");
         frame.setSize(LARGE+200,HIGH+100);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
@@ -64,14 +73,14 @@ private boolean[][] example = { {false, false, false, false, false, false, false
         titlelbl= new JLabel("Game "+ gamenr);
         title.add(titlelbl);
         title.setSize(LARGE+200, 100);
-        user= new JLabel("Your score : "+client.getScore());
+        user= new JLabel("Your score : "+clientplayer.getScore());
         title.add(user, BorderLayout.EAST);
         
         
         table = paintTable(example);
         table.setVisible(true);
         
-        JPanel playing = new JPanel();
+        playing = new JPanel();
         scores= new JPanel();
         scores.setLayout(new BoxLayout(scores, BoxLayout.Y_AXIS));
         playing.setMinimumSize(new Dimension(200, HIGH));
@@ -106,7 +115,7 @@ private boolean[][] example = { {false, false, false, false, false, false, false
 					  }
 					button.addActionListener(new ActionListener(){
 						public void actionPerformed(ActionEvent e) {
-							wingame();
+							IGame.huntFly();
 						}
 					});
 					button.setSize(LARGE/columns, HIGH/rows);
@@ -118,9 +127,8 @@ private boolean[][] example = { {false, false, false, false, false, false, false
 		return panel;
 	}
 	
-	private void wingame(){
+	public void wingame(){
 		gamenr++;
-		clientplayer.incrementScore();
 		 titlelbl.setText("Game "+ gamenr);
 		 user.setText("Your score : "+clientplayer.getScore());
 		 fillScores();
@@ -128,6 +136,14 @@ private boolean[][] example = { {false, false, false, false, false, false, false
 		frame.repaint();
 	}
 	
+	public void lostgame(String name){
+		gamenr++;
+		 titlelbl.setText("Game "+ gamenr);
+		 user.setText("Your score : "+clientplayer.getScore());
+		 fillScores();
+		System.out.println("You lost ! \n" + name + "won the game");
+		frame.repaint();
+	}
 	
 	private void fillScores(){
 		scores.removeAll();
@@ -135,8 +151,10 @@ private boolean[][] example = { {false, false, false, false, false, false, false
 		intro.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		intro.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         scores.add(intro);
-		for(Player player: players){
-			JLabel playerlbl = new JLabel(player.getName() + " : "+ player.getScore());
+        Iterator<Entry<String, Player>> itr = players.entrySet().iterator();
+		while(itr.hasNext()){
+			Map.Entry<String, Player> pairs = (Map.Entry<String, Player>)itr.next();
+			JLabel playerlbl = new JLabel(pairs.getValue().getName() + " : "+ pairs.getValue().getScore());
 			playerlbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 			playerlbl.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 			scores.add(playerlbl);
@@ -145,16 +163,36 @@ private boolean[][] example = { {false, false, false, false, false, false, false
 		frame.repaint();
 	}
 	
-	private void prepareexample(){
-		players= new ArrayList<Player>();
-		Player p1= new Player("Maxime");
-		Player p2= new Player("Christian");
-		Player p3= new Player ("Jose");
-		players.add(p1);
-		players.add(p2);
-		players.add(p3);
+	public void repaint() {
+		clientplayer = IGame.getPlayer();
+		players = new HashMap<String, Player>(IGame.getPlayers());
+		example = IGame.getBoard();
+		
+		title = new JPanel(new BorderLayout());
+        titlelbl= new JLabel("Game "+ gamenr);
+        title.add(titlelbl);
+        title.setSize(LARGE+200, 100);
+        user= new JLabel("Your score : "+clientplayer.getScore());
+        title.add(user, BorderLayout.EAST);
+        
+        
+        table = paintTable(example);
+        table.setVisible(true);
+        
+        playing = new JPanel();
+        scores= new JPanel();
+        scores.setLayout(new BoxLayout(scores, BoxLayout.Y_AXIS));
+        playing.setMinimumSize(new Dimension(200, HIGH));
+        scores.setAlignmentY(Component.CENTER_ALIGNMENT);
+        playing.setAlignmentY(Component.CENTER_ALIGNMENT);
+        fillScores();
+        playing.setLayout(new BorderLayout());
+        playing.add(scores, BorderLayout.SOUTH);
+        
+        frame.add(title, BorderLayout.NORTH);
+        frame.add(table, BorderLayout.CENTER);
+        frame.add(playing, BorderLayout.EAST);
+        //frame.pack();
+        frame.repaint();
 	}
-	
-	
-
 }

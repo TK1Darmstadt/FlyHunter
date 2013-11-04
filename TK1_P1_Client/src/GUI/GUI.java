@@ -1,5 +1,6 @@
 package GUI;
 
+import main.*;
 /**
  * Graphical User Interface
  * @author Jose San Juan, Maxime Peyrard, Christian Greciano Raiskila
@@ -8,11 +9,8 @@ package GUI;
 public class GUI {
 	private LoginScreen loginscreen;
 	
-	public GUI(){
-	loginscreen= new LoginScreen();
+	public GUI(IGameClientImpl IGame){
+	loginscreen= new LoginScreen(IGame);
 	}
-	
-	public static void main(String[] args){
-		new GUI();
-	}
+
 }

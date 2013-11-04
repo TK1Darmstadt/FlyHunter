@@ -1,7 +1,6 @@
 package GUI;
 
-import impl.Player;
-
+import main.*;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -15,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import main.Player;
+
 public class LoginScreen {
 
 	private JFrame frame;
@@ -22,9 +23,8 @@ public class LoginScreen {
 	private JTextField username;
 	private JLabel userNamelbl;
 	private JButton ok;
-	private Player client;
 		
-	public LoginScreen(){
+	public LoginScreen(final IGameClientImpl IGame){
 		frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Welcome to Fly Hunter");
@@ -40,9 +40,7 @@ public class LoginScreen {
         ok.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				String name= username.getText();
-				client= new Player(name);
-				new GameScreen(client);
+				IGame.login(username.getText());
 				frame.setVisible(false);
 			}
         	
@@ -58,10 +56,6 @@ public class LoginScreen {
         frame.add(panel2);
         frame.pack();
         frame.setVisible(true);
-	}
-	
-	public Player getClient(){
-		return client;
 	}
 	
 }
