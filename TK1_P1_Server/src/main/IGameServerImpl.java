@@ -22,6 +22,7 @@ public class IGameServerImpl extends UnicastRemoteObject  implements IGameServer
 	private Timer timer;
 	private final int timeout = 1500;
 	private Map<String, IGameClient> remote_players;
+	private boolean game_started;
 	
 	protected IGameServerImpl() throws RemoteException {
 		super();
@@ -30,6 +31,8 @@ public class IGameServerImpl extends UnicastRemoteObject  implements IGameServer
 		players = new HashMap<String, Player>();
 		remote_players = new HashMap<String, IGameClient>();
 		timers = new HashMap<String, Long>();
+		game_started = false;
+		
 		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				timer.stop();
@@ -76,10 +79,17 @@ public class IGameServerImpl extends UnicastRemoteObject  implements IGameServer
 		players.get(playerName).setId(next_ID);
 		remote_players.put(playerName, IGame);
 		
-		if (players.size() >= 1) 
+		if (players.size() == remote_players.size())
+			System.out.println("List of players now : \n" + players.toString());
+		
+		if (players.size() >= 1 && !game_started) {
 			startGame();
+			System.out.println("New game Started");
+			game_started = true;
+		}
+		short tmp = next_ID;
 		next_ID++;
-		return next_ID--;
+		return tmp;
 	}
 
 	@Override
@@ -92,7 +102,13 @@ public class IGameServerImpl extends UnicastRemoteObject  implements IGameServer
 
 	@Override
 	public void huntFly(String playerName, long time) throws RemoteException {
+		System.out.println("Someone hunt : " + playerName+ "  " + time);
+		System.out.println(timers.toString());
 		timers.put(playerName, time);
+		System.out.println("now : ");
+		System.out.println(timers.toString());
+		System.out.println(timers.size() + "   and " + players.size());
+		
 		if (timers.isEmpty()) {
 			 timer.start();
 		}
@@ -115,28 +131,42 @@ public class IGameServerImpl extends UnicastRemoteObject  implements IGameServer
 	}
 	
 	public void broadcastWinner (String playerName) {
+		System.out.println("Winner broadcast : "+ playerName + " score "+ players.get(playerName).getScore());
 		Iterator<Entry<String, IGameClient>> itr = remote_players.entrySet().iterator();
 		while (itr.hasNext()) {
 			Map.Entry<String, IGameClient> pairs = (Map.Entry<String, IGameClient>)itr.next();
 			try {
+				System.out.println("Send to " + pairs.getKey());
 				pairs.getValue().recieveFlyHunted(playerName, players.get(playerName).getScore());
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("An other game will be started");
 		startGame();
+	}
+	
+	public Map<String, Integer> createPlayersInfos() {
+		Map<String, Integer> tmp = new HashMap<String, Integer>();
+		Iterator<Entry<String,Player>> itr = players.entrySet().iterator();
+		while (itr.hasNext()) {
+			Map.Entry<String, Player> pairs = (Map.Entry<String, Player>)itr.next();
+			tmp.put(pairs.getKey(), pairs.getValue().getScore());
+		}
+		return tmp;
 	}
 	
 	public void startGame() {
 		nb_game++;
 		int random_x = (int)(Math.random() * (Constant.size-1)) + 1;
 		int random_y = (int)(Math.random() * (Constant.size-1)) + 1;
+		Map<String, Integer> players_info = createPlayersInfos();
+		
 		Iterator<Entry<String, IGameClient>> itr = remote_players.entrySet().iterator();
 		while (itr.hasNext()) {
 			Map.Entry<String, IGameClient> pairs = (Map.Entry<String, IGameClient>)itr.next();
 			try {
-				pairs.getValue().recieveFlyPosition(random_x, random_y);
+				pairs.getValue().recieveFlyPosition(random_x, random_y, players_info);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

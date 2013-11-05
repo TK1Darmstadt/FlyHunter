@@ -1,4 +1,4 @@
-package main;
+package impl;
 
 public class Player {
 	private int score;
@@ -11,6 +11,13 @@ public class Player {
 		nb_timeouts = 0;
 		score=0;
 		ID =-1;
+	}
+	
+	public Player(String name, int score, short ID, short nb_timeouts) {
+		this.name = name;
+		this.nb_timeouts = nb_timeouts;
+		this.score = score;
+		this.ID = ID;
 	}
 	
 	public String getName(){
@@ -41,5 +48,9 @@ public class Player {
 		if (nb_timeouts > 3) 
 			return true;
 		return false;
+	}
+	
+	public String toString() {
+		return name + " : " + score + ", " + nb_timeouts + ", " + ID + "\n";
 	}
 }

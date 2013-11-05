@@ -1,8 +1,6 @@
 package main;
 
-import impl.Constant;
-import impl.IGameClient;
-import impl.IGameServer;
+import impl.*;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -11,7 +9,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import GUI.GameScreen;
 import GUI.LoginScreen;
@@ -39,12 +39,6 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 		board[0][0] = true;
 		
 		players= new HashMap<String, Player>();
-		Player p1= new Player("Maxime");
-		Player p2= new Player("Christian");
-		Player p3= new Player ("Jose");
-		players.put(p1.getName(), p1);
-		players.put(p2.getName(), p2);
-		players.put(p3.getName(), p3);
 	}
 	
 	public Map<String, Player> getPlayers() {
@@ -67,7 +61,7 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 			if (r instanceof IGameServer) {
 				short ID = ((IGameServer) r).login(name, this);
 				if (ID < 1) {
-					//Pseudo déjà utilisé
+					System.out.println("Pseudo already in use");
 				}
 				player.setId(ID);
 			}
@@ -137,12 +131,27 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 			gameScreen.lostgame(playerName);
 		}
 	}
+	
+	public void createPlayersList(Map<String, Integer> players_info) {
+		this.players = new HashMap<String, Player>();
+		players.put(player.getName(), player);
+		Iterator<Entry<String,Integer>> itr = players_info.entrySet().iterator();
+		while (itr.hasNext()) {
+			Map.Entry<String,Integer> pairs = (Map.Entry<String,Integer>)itr.next();
+			if (!pairs.getKey().equals(player.getName())) {
+				Player tmp = new Player (pairs.getKey(), pairs.getValue(), (short)-1, (short)0);
+				this.players.put(pairs.getKey(), tmp);
+			}
+		}
+	}
 
 	@Override
-	public void recieveFlyPosition(int x, int y) throws RemoteException {
+	public void recieveFlyPosition(int x, int y, Map<String, Integer> players_info) throws RemoteException {
 		System.out.println("receive pos ");
 		System.out.println("prev : " + flyPos.getX() + " : " + flyPos.getY());
 		System.out.println("now : " + x + " : "+ y);
+		createPlayersList(players_info);
+		System.out.println("Players on this game : \n" + this.players.toString());
 		flyPos.setX(x);
 		flyPos.setY(y);
 		for(int i=0; i<board.length; i++) {
@@ -151,6 +160,7 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 	        }
 		}
 		board[x][y] = true;
+		timer = System.currentTimeMillis();
 		gameScreen = new GameScreen(this);
 	}
 }

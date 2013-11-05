@@ -30,7 +30,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import main.IGameClientImpl;
-import main.Player;
+import impl.Player;
 
 public class GameScreen {
 private static int LARGE=640;
