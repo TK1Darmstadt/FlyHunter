@@ -66,7 +66,7 @@ private boolean[][] example;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle(clientplayer.getName() + " hunt the fly!");
         frame.setSize(LARGE+200,HIGH+100);
-        frame.setLocationRelativeTo(null);
+        //frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
         
         title = new JPanel(new BorderLayout());
@@ -109,7 +109,7 @@ private boolean[][] example;
 				if (table[i][j]){
 					try {
 					    Image img = ImageIO.read(getClass().getResource("resources/fly.jpg"));
-					    img.getScaledInstance(LARGE/columns, HIGH/rows, 0);
+					    img= img.getScaledInstance(LARGE/columns, HIGH/rows, 0);
 					    button.setIcon(new ImageIcon(img));
 					  } catch (IOException ex) {
 					  }
@@ -194,5 +194,10 @@ private boolean[][] example;
         frame.add(playing, BorderLayout.EAST);
         //frame.pack();
         frame.repaint();
+	}
+	
+	public void closeWindow(){
+		frame.setVisible(false); //you can't see me!
+		//frame.dispose();
 	}
 }

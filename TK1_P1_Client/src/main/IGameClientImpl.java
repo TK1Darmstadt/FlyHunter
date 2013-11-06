@@ -161,6 +161,7 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 		}
 		board[x][y] = true;
 		timer = System.currentTimeMillis();
+		if (gameScreen != null) gameScreen.closeWindow();
 		gameScreen = new GameScreen(this);
 	}
 }
