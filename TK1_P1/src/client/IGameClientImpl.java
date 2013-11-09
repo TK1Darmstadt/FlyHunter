@@ -77,8 +77,8 @@ public class IGameClientImpl extends UnicastRemoteObject implements IGameClient 
 			System.out.println("Retour RPC");
 			System.out.println(players.toString());
 			
-			if (gameScreen != null)	gameScreen.closeWindow();
-				gameScreen = new GameScreen(this);
+			if (gameScreen != null)	gameScreen.repaint();
+			else gameScreen = new GameScreen(this);
 			
 		}
 		catch (MalformedURLException e) {

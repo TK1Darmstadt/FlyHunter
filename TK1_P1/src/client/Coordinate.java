@@ -1,5 +1,9 @@
 package client;
-
+/**
+ * Simple coordinate
+ * @author Maxime Peyrard, Jose San Juan, Christian Greciano
+ *
+ */
 public class Coordinate {
 	private int x;
 	private int y;

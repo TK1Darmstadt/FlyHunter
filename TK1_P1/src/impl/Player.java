@@ -1,5 +1,9 @@
 package impl;
-
+/**
+ * Player class
+ * @author Maxime Peyrard, Jose San Juan, Christian Greciano
+ *
+ */
 public class Player {
 	private int score;
 	private String name;

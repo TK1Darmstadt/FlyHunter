@@ -15,7 +15,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
+/**
+ * GUI Login Screen
+ * @author Maxime Peyrard, Jose San Juan, Christian Greciano
+ *
+ */
 
 public class LoginScreen {
 

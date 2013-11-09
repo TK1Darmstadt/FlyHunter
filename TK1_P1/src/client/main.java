@@ -1,5 +1,9 @@
 package client;
-
+/**
+ * Client
+ * @author Maxime Peyrard, Jose San Juan, Christian Greciano
+ *
+ */
 import GUI.*;
 
 public class main {

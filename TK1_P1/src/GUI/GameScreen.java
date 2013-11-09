@@ -80,7 +80,7 @@ private boolean[][] example;
         } );
         frame.setTitle(clientplayer.getName() + " hunt the fly!");
         frame.setSize(LARGE+200,HIGH+100);
-        frame.setLocationByPlatform(true);
+       // frame.setLocationByPlatform(true);
         frame.setLocation(IGame.getPlayer().getId()*100, IGame.getPlayer().getId()*50);
         frame.setLayout(new BorderLayout());
 
