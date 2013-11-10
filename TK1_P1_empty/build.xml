@@ -8,11 +8,15 @@
 	<property name="src.dir"     value="src"/>
 	<property name="src-server.dir"     value="${src.dir}/server"/>
 	<property name="src-client.dir"     value="${src.dir}/client"/>
+	<property name="src-GUI.dir"     value="${src.dir}/GUI"/>
+	<property name="src-impl.dir"     value="${src.dir}/impl"/>
 	
     <property name="build.dir"   value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="classes-server.dir" value="${classes.dir}/server"/>
     <property name="classes-client.dir" value="${classes.dir}/client"/>
+    <property name="classes-GUI.dir" value="${classes.dir}/GUI"/>
+    <property name="classes-impl.dir" value="${classes.dir}/impl"/>
     
     <property name="jar.dir"     value="${build.dir}/jar"/>
     <property name="main-class-server"  value="StartServer"/>
@@ -25,8 +29,12 @@
     <target name="compile">
     	<mkdir dir="${classes-server.dir}"/>
 		<mkdir dir="${classes-client.dir}"/>
+		<mkdir dir="${classes-GUI.dir}"/>
+		<mkdir dir="${classes-impl.dir}"/>
         <javac includeantruntime="false" srcdir="${src-server.dir}" destdir="${classes-server.dir}"/>
 		<javac includeantruntime="false" srcdir="${src-client.dir}" destdir="${classes-client.dir}"/>
+		<javac includeantruntime="false" srcdir="${src-GUI.dir}" destdir="${classes-GUI.dir}"/>
+		<javac includeantruntime="false" srcdir="${src-impl.dir}" destdir="${classes-impl.dir}"/>
     </target>
 
     <target name="jar" depends="compile">
